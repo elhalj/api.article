@@ -1,0 +1,461 @@
+### Backend : `article.controller.js`
+```javascript
+import Article from "../models/Article.model.js";
+
+// Récupérer tous les articles publiés (public)
+export const getArticles = async (req, res) => {
+  try {
+    const articles = await Article.find({ status: 'published' })
+      .populate('author', 'username')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(articles);
+  } catch (error) {
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
+  }
+};
+
+// Récupérer les articles de l'utilisateur connecté
+export const getUserArticles = async (req, res) => {
+  try {
+    const articles = await Article.find({ author: req.user._id })
+      .sort({ createdAt: -1 });
+      
+    res.status(200).json(articles);
+  } catch (error) {
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
+  }
+};
+
+// Supprimer un article
+export const deleteArticle = async (req, res) => {
+  try {
+    const article = await Article.findById(req.params.id);
+
+    if (!article) {
+      return res.status(404).json({ message: "Article non trouvé" });
+    }
+
+    // Vérifier l'auteur ou admin
+    if (article.author.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Action non autorisée" });
+    }
+
+    await Article.deleteOne({ _id: req.params.id });
+    res.status(200).json({ message: "Article supprimé" });
+  } catch (error) {
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
+  }
+};
+
+// Modifier un article
+export const updateArticle = async (req, res) => {
+  try {
+    const article = await Article.findById(req.params.id);
+
+    if (!article) {
+      return res.status(404).json({ message: "Article non trouvé" });
+    }
+
+    if (article.author.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Action non autorisée" });
+    }
+
+    const updatedArticle = await Article.findByIdAndUpdate(
+      req.params.id,
+      { 
+        ...req.body,
+        status: req.body.status || article.status 
+      },
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json(updatedArticle);
+  } catch (error) {
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
+  }
+};
+```
+
+---
+
+### Frontend : `articleStore.js` (Zustand)
+```javascript
+import create from 'zustand';
+import axios from 'axios';
+
+const useArticleStore = create((set) => ({
+  articles: [],
+  userArticles: [],
+  loading: false,
+  error: null,
+
+  // Récupérer les articles publics
+  fetchArticles: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await axios.get('/api/articles');
+      set({ articles: response.data, loading: false });
+    } catch (error) {
+      set({ error: error.response?.data?.message || error.message, loading: false });
+    }
+  },
+
+  // Récupérer les articles de l'utilisateur
+  fetchUserArticles: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await axios.get('/api/articles/me', { withCredentials: true });
+      set({ userArticles: response.data, loading: false });
+    } catch (error) {
+      set({ error: error.response?.data?.message || error.message, loading: false });
+    }
+  },
+
+  // Créer un article
+  createArticle: async (articleData) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await axios.post('/api/articles', articleData, { 
+        withCredentials: true 
+      });
+      set(state => ({
+        userArticles: [response.data, ...state.userArticles],
+        loading: false
+      }));
+    } catch (error) {
+      set({ error: error.response?.data?.message || error.message, loading: false });
+    }
+  },
+
+  // Modifier un article
+  updateArticle: async (id, updatedData) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await axios.put(`/api/articles/${id}`, updatedData, { 
+        withCredentials: true 
+      });
+      set(state => ({
+        userArticles: state.userArticles.map(article =>
+          article._id === id ? response.data : article
+        ),
+        loading: false
+      }));
+    } catch (error) {
+      set({ error: error.response?.data?.message || error.message, loading: false });
+    }
+  },
+
+  // Supprimer un article
+  deleteArticle: async (id) => {
+    set({ loading: true, error: null });
+    try {
+      await axios.delete(`/api/articles/${id}`, { withCredentials: true });
+      set(state => ({
+        userArticles: state.userArticles.filter(article => article._id !== id),
+        loading: false
+      }));
+    } catch (error) {
+      set({ error: error.response?.data?.message || error.message, loading: false });
+    }
+  }
+}));
+
+export default useArticleStore;
+```
+
+---
+
+### Routes backend (à ajouter)
+```javascript
+// routes/articleRoutes.js
+import express from 'express';
+import {
+  getArticles,
+  getUserArticles,
+  deleteArticle,
+  updateArticle
+} from '../controllers/article.controller.js';
+import protect from '../middleware/auth.js';
+
+const router = express.Router();
+
+// Public
+router.get('/', getArticles);
+
+// Privé
+router.get('/me', protect, getUserArticles);
+router.delete('/:id', protect, deleteArticle);
+router.put('/:id', protect, updateArticle);
+
+export default router;
+```
+
+---
+
+### Exemple d'utilisation frontend
+```javascript
+// Composant ArticleList.jsx
+import useArticleStore from '../stores/articleStore';
+
+function ArticleList() {
+  const { articles, fetchArticles } = useArticleStore();
+
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  return (
+    <div>
+      {articles.map(article => (
+        <div key={article._id}>
+          <h3>{article.title}</h3>
+          <p>{article.content}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+---
+
+Cette implémentation fournit :
+1. Gestion complète CRUD sécurisée
+2. Séparation des articles publics/privés
+3. Synchronisation automatique du state frontend
+4. Gestion des erreurs et loading states
+5. Protection des routes backend avec JWT
+
+Les fonctionnalités clés :
+- Les utilisateurs voient seulement leurs articles dans le dashboard
+- Seul l'auteur peut modifier/supprimer ses articles
+- Les articles publiés sont visibles par tous
+- Mise à jour en temps réel de l'interface après modifications
+
+
+###2
+
+### **Backend (Node.js/Express/MongoDB)**
+
+#### Structure de base :
+```
+backend/
+├── config/
+│   └── db.js
+├── models/
+│   ├── User.model.js
+│   └── Article.model.js
+├── routes/
+│   ├── auth.routes.js
+│   └── article.routes.js
+├── controllers/
+│   ├── auth.controller.js
+│   └── article.controller.js
+├── middleware/
+│   └── auth.js
+└── app.js
+```
+
+#### 1. Modèles Mongoose :
+
+**User.model.js** :
+```javascript
+const userSchema = new mongoose.Schema({
+  username: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  role: { type: String, enum: ['user', 'admin'], default: 'user' }
+}, { timestamps: true });
+```
+
+**Article.model.js** :
+```javascript
+const articleSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  content: { type: String, required: true },
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  status: { type: String, enum: ['draft', 'published'], default: 'draft' },
+  tags: [String]
+}, { timestamps: true });
+```
+
+#### 2. Contrôleurs :
+
+**auth.controller.js** :
+```javascript
+export const register = async (req, res) => {
+  try {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const user = await User.create({ ...req.body, password: hashedPassword });
+    generateToken(user._id, res);
+    res.status(201).json(user);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+```
+
+**article.controller.js** :
+```javascript
+export const createArticle = async (req, res) => {
+  try {
+    const article = await Article.create({
+      ...req.body,
+      author: req.user._id
+    });
+    res.status(201).json(article);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+```
+
+#### 3. Middleware d'authentification :
+```javascript
+export const protect = async (req, res, next) => {
+  const token = req.cookies.jwt;
+  if (!token) return res.status(401).json({ message: 'Non authentifié' });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.userId);
+    next();
+  } catch (error) {
+    res.status(401).json({ message: 'Token invalide' });
+  }
+};
+```
+
+---
+
+### **Frontend (React/Zustand)**
+
+#### Structure de base :
+```
+frontend/
+├── src/
+│   ├── stores/
+│   │   ├── authStore.js
+│   │   └── articleStore.js
+│   ├── components/
+│   │   ├── Dashboard.jsx
+│   │   ├── ArticleForm.jsx
+│   │   └── PublicArticles.jsx
+│   ├── pages/
+│   │   ├── Login.jsx
+│   │   └── Register.jsx
+│   └── App.jsx
+```
+
+#### 1. Store Zustand (authStore.js) :
+```javascript
+import create from 'zustand';
+
+const useAuthStore = create((set) => ({
+  user: null,
+  login: async (credentials) => {
+    const res = await axios.post('/api/auth/login', credentials);
+    set({ user: res.data });
+  },
+  logout: () => {
+    axios.post('/api/auth/logout');
+    set({ user: null });
+  }
+}));
+```
+
+#### 2. Exemple de composant Dashboard :
+```javascript
+function Dashboard() {
+  const { user } = useAuthStore();
+  const { articles, fetchUserArticles } = useArticleStore();
+
+  useEffect(() => {
+    if (user) fetchUserArticles(user._id);
+  }, [user]);
+
+  return (
+    <div>
+      <h1>Bienvenue {user?.username}</h1>
+      <ArticleForm />
+      {articles.map(article => (
+        <div key={article._id}>
+          <h3>{article.title}</h3>
+          <p>{article.content}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+#### 3. ArticleForm.jsx :
+```javascript
+function ArticleForm() {
+  const [formData, setFormData] = useState({ title: '', content: '' });
+  const { createArticle } = useArticleStore();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await createArticle(formData);
+    setFormData({ title: '', content: '' });
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        placeholder="Titre"
+        value={formData.title}
+        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+      />
+      <textarea
+        placeholder="Contenu"
+        value={formData.content}
+        onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+      />
+      <button type="submit">Publier</button>
+    </form>
+  );
+}
+```
+
+---
+
+### **Flux d'authentification**
+1. L'utilisateur s'inscrit/login
+2. Le backend envoie un cookie HTTP-only avec le JWT
+3. Zustand met à jour le state d'authentification
+4. Le dashboard charge les articles de l'utilisateur
+5. La création d'article envoie le JWT automatiquement via les cookies
+
+---
+
+### **Sécurité et Bonnes Pratiques**
+- Validation des données avec Joi ou Zod
+- Protection contre les attaques XSS et CSRF
+- Pagination des résultats
+- Sanitization des entrées utilisateur
+- Gestion des erreurs frontend avec des toasts
+- Mise en place de CORS approprié
+
+---
+
+### **Pour commencer**
+1. Installer les dépendances backend :
+```bash
+npm install express mongoose bcryptjs jsonwebtoken cookie-parser cors dotenv
+```
+
+2. Installer les dépendances frontend :
+```bash
+npm install react-router-dom axios zustand @emotion/react @emotion/styled
+```
+
+Cette structure fournit une base solide pour développer votre application. Vous pouvez l'enrichir avec des fonctionnalités supplémentaires comme :
+- Édition/suppression d'articles
+- Système de commentaires
+- Recherche avancée
+- Pagination
+- Upload d'images
