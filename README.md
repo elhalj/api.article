@@ -1,4 +1,6 @@
 ````markdown
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 # Backend d'Articles
 
 Ce projet est un backend pour la gestion d'articles. Il permet de créer, lire, mettre à jour et supprimer des articles, ainsi que de gérer les utilisateurs et les authentifications.
