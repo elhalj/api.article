@@ -1,6 +1,4 @@
----
-
-```markdown
+````markdown
 # Backend d'Articles
 
 Ce projet est un backend pour la gestion d'articles. Il permet de créer, lire, mettre à jour et supprimer des articles, ainsi que de gérer les utilisateurs et les authentifications.
@@ -8,11 +6,13 @@ Ce projet est un backend pour la gestion d'articles. Il permet de créer, lire, 
 ## Fonctionnalités
 
 - **Gestion des articles** :
+
   - Créer, lire, mettre à jour et supprimer des articles.
   - Rechercher des articles par catégorie, auteur, tags ou statut.
   - Pagination et tri des résultats.
 
 - **Authentification** :
+
   - Inscription et connexion des utilisateurs.
   - Protection des routes avec JWT.
   - Gestion des rôles (utilisateur, admin).
@@ -25,6 +25,7 @@ Ce projet est un backend pour la gestion d'articles. Il permet de créer, lire, 
 ## Technologies utilisées
 
 - **Backend** :
+
   - Node.js
   - Express.js
   - MongoDB (avec Mongoose)
@@ -42,13 +43,16 @@ Ce projet est un backend pour la gestion d'articles. Il permet de créer, lire, 
    git clone https://github.com/votre-utilisateur/backend-articles.git
    cd backend-articles
    ```
+````
 
 2. Installez les dépendances :
+
    ```bash
    npm install
    ```
 
 3. Configurez les variables d'environnement :
+
    - Créez un fichier `.env` à la racine du projet.
    - Ajoutez les variables suivantes :
      ```env
@@ -59,6 +63,7 @@ Ce projet est un backend pour la gestion d'articles. Il permet de créer, lire, 
      ```
 
 4. Démarrez le serveur :
+
    ```bash
    npm start
    ```
@@ -85,6 +90,7 @@ Ce projet est un backend pour la gestion d'articles. Il permet de créer, lire, 
 ### Exemples de requêtes
 
 #### Créer un article
+
 ```bash
 curl -X POST http://localhost:3000/api/articles \
   -H "Content-Type: application/json" \
@@ -98,6 +104,7 @@ curl -X POST http://localhost:3000/api/articles \
 ```
 
 #### Rechercher des articles
+
 ```bash
 curl -X GET "http://localhost:3000/api/articles?category=Technologie&page=1&limit=10"
 ```
@@ -128,6 +135,7 @@ backend-articles/
 ## Licence
 
 Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+
 ```
 
 ---
@@ -139,3 +147,4 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 3. Personnalisez les sections (comme les liens GitHub, les variables d'environnement, etc.) en fonction de votre projet.
 
 Ce fichier `README.md` est prêt à être utilisé et fournit une documentation claire pour les développeurs qui utiliseront ou contribueront à votre projet. 🚀
+```
