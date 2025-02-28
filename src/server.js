@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import bodyParser from "body-parser";
+// import bodyParser from "body-parser";
 import { dbConnect } from "./database/db.js";
 import { routes } from "./routes/user.route.js";
 import dotenv from "dotenv";
@@ -13,11 +13,10 @@ const app = express();
 const port = process.env.PORT || 5001;
 
 app.use(express.json());
-app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "",
+    origin: process.env.CLIENT_URL.split(",") || "http://localhost:3000",
     credentials: true,
   })
 );
@@ -25,7 +24,11 @@ app.use(
 app.use("/api", routes);
 app.use("/api/article", articleRoute);
 
-app.listen(5001, () => {
+app.get("/", (req, res) => {
+  res.send("server est en marche...");
+});
+
+app.listen(port, () => {
   console.log(`server actif localhost localhost:${port}`);
   dbConnect();
 });
