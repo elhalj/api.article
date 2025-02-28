@@ -106,3 +106,65 @@ export const checkAuth = (req, res) => {
     console.log("Echec d'Authentification", error.message);
   }
 };
+
+export const getUser = async (req, res) => {
+  try {
+    const getuser = await User.find({}).sort({ createdAt: -1 });
+    res
+      .status(200)
+      .json({ suuces: true, message: "Recuperer avec succes", Users: getuser });
+  } catch (error) {
+    res.status(500).json({
+      succes: false,
+      message:
+        "ERREUR lors de ls recuperation des utilisateur, verifier server",
+      error: error.message,
+    });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      res
+        .status(401)
+        .json({ succes: false, message: "utilisateur non trouver" });
+    }
+
+    const deleteUser = await user.deleteOne({ _id: req.params.id });
+    res.status(201).json({
+      succes: true,
+      message: "Supprimer avec succes",
+      user: deleteUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      succes: false,
+      message: "ERREUR, verifier server",
+      error: error.message,
+    });
+  }
+};
+
+export const getUser_me = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      res.status(401).json({ succes: false, message: "Invalid credential" });
+    }
+    res
+      .status(200)
+      .json({
+        succes: true,
+        message: "Information accorde",
+        user: [user.name, user.email],
+      });
+  } catch (error) {
+    res.status(500).json({
+      succes: false,
+      message: "ERREUR, verifier server",
+      error: error.message,
+    });
+  }
+};

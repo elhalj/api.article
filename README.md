@@ -77,17 +77,24 @@ Ce projet est un backend pour la gestion d'articles. Il permet de créer, lire, 
 
 ### Articles
 
-- **GET /api/articles** : Récupérer tous les articles (public).
-- **GET /api/articles/me** : Récupérer les articles de l'utilisateur connecté.
-- **POST /api/articles** : Créer un nouvel article.
-- **PUT /api/articles/:id** : Mettre à jour un article.
-- **DELETE /api/articles/:id** : Supprimer un article.
+- **GET /api/article/toutArticles** : Récupérer tous les articles (public).
+- **GET /api/article/chercherArticle** : Rechercher article (public)
+- **GET /api/article/mesArticles** : Récupérer les articles de l'utilisateur connecté.
+- **POST /api/article/ajouterArticle** : Créer un nouvel article.
+- **PUT /api/article/:id** : Mettre à jour un article.
+- **DELETE /api/article/:id** : Supprimer un article.
 
 ### Authentification
 
-- **POST /api/auth/register** : Inscription d'un nouvel utilisateur.
-- **POST /api/auth/login** : Connexion d'un utilisateur.
-- **GET /api/auth/me** : Récupérer les informations de l'utilisateur connecté.
+- **POST /api/signUp** : Inscription d'un nouvel utilisateur.
+- **POST /api/login** : Connexion d'un utilisateur.
+- **POST /api/logout** : Deconnexion utilisateur.
+- **GET /api/checkAuth** : Verification si l'utilisateur est connecter.
+- **GET /api/getUser** : Recuperer tous les utilisateur (Admin).
+- **DELETE /api/:id** : Supprimer utilisateur (Admin)
+- **GET /api/:id** : Recuperer information personnel (Prive).
+- **
+  -\*\***
 
 ### Exemples de requêtes
 
@@ -142,11 +149,5 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 
 ---
 
-### Comment utiliser ce fichier
 
-1. Créez un fichier `README.md` à la racine de votre projet.
-2. Copiez-collez le contenu ci-dessus dans ce fichier.
-3. Personnalisez les sections (comme les liens GitHub, les variables d'environnement, etc.) en fonction de votre projet.
-
-Ce fichier `README.md` est prêt à être utilisé et fournit une documentation claire pour les développeurs qui utiliseront ou contribueront à votre projet. 🚀
 ```

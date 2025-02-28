@@ -1,6 +1,9 @@
 import express from "express";
 import {
   checkAuth,
+  deleteUser,
+  getUser,
+  getUser_me,
   login,
   logout,
   signUp,
@@ -13,3 +16,8 @@ routes.post("/signUp", signUp); //creation de compte
 routes.post("/login", login); //connexion
 routes.post("/logout", logout); //connexion
 routes.get("/checkAuth", protectRoute, checkAuth); //verification d'authenfication
+
+//Privee Admin
+routes.get("/getUser", protectRoute, getUser); //recuperer tous les utilateurs
+routes.get("/:id", protectRoute, getUser_me); //recuperer information personnel
+routes.delete("/:id", protectRoute, deleteUser); //supprimer utilisateur
