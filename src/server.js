@@ -15,8 +15,10 @@ const port = process.env.PORT || 5001;
 app.use(express.json());
 app.use(cookieParser());
 const corsOptions = {
-  origin: ['http://localhost:5173', 'https://votre-frontend.com'],
-  optionsSuccessStatus: 200
+   origin: '*', // Temporairement pour les tests
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 };
 
 app.use(cors(corsOptions)); // Pour toutes les routes
