@@ -12,7 +12,7 @@ import { protectRoute } from "../middleware/protectRoute.js";
 export const articleRoute = express.Router();
 
 //Public
-articleRoute.get("/toutAticles", getArticle); //recuperer article public
+articleRoute.get("/toutArticles", getArticle); //recuperer article public
 articleRoute.get("/chercherArticle", searchArticle); //rechercher article
 
 //Priver
