@@ -23,6 +23,14 @@ app.use(
 
 app.use("/api", routes);
 app.use("/api/article", articleRoute);
+// Gestion des erreurs centralisée
+app.use((err, req, res, next) => {
+  console.error('Erreur:', err);
+  res.status(500).json({
+    status: 'error',
+    message: 'Erreur interne du serveur'
+  });
+});
 
 app.get("/", (req, res) => {
   res.send("server est en marche...");
