@@ -84,15 +84,27 @@ export const getArticle = async (req, res) => {
 
 // Privee
 //recuperer les arcticles de l'utilisateur connecter
-export const getUserArticle = async (req, res) => {
+const handleError = (res, error) => {
+  console.error(error);
+  res.status(500).json({
+    status: 'error',
+    message: error.message || 'Erreur serveur'
+  });
+};
+
+export const getArticles = async (req, res) => {
   try {
-    const article = await Article.find({ author: req.user._id }).sort({
-      createdAt: -1,
+    const articles = await Article.find()
+      .populate('author', 'name')
+      .sort('-createdAt');
+    
+    res.status(200).json({
+      status: 'success',
+      results: articles.length,
+      data: { articles }
     });
-    res.status(201).json(article);
   } catch (error) {
-    res.status(500).json({ message: "ERREUR, verifier server" });
-    console.log("ERREUR, verifier server", error.message);
+    handleError(res, error);
   }
 };
 
