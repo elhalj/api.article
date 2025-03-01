@@ -14,12 +14,12 @@ const port = process.env.PORT || 5001;
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: ['http://localhost:5173', 'https://votre-frontend.com'],
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions)); // Pour toutes les routes
 
 app.use("/api", routes);
 app.use("/api/article", articleRoute);
