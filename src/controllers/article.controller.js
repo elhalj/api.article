@@ -53,22 +53,32 @@ export const addArticle = async (req, res) => {
 //afficher tous les articles
 export const getArticle = async (req, res) => {
   try {
-    const arcticles = await Article.find({})
+    const articles = await Article.find({})
       .populate("author", "name")
       .sort({ createdAt: -1 });
 
+    // 1. Console.log avant l'envoi de la réponse
+    console.log("Articles récupérés:", articles);
+
+    // 2. Correction des typos et uniformisation du format
     res.status(200).json({
-      succes: true,
-      message: "Effectuer avec succes",
-      arcticles: arcticles,
+      success: true,
+      message: "Récupération réussie",
+      count: articles.length,
+      articles
     });
-    console.log(arcticle);
+
   } catch (error) {
-    res.status(500).json({
-      succes: false,
-      message: "Echec lors de la recuperation, verifier server",
-      error: error,
-    });
+    // 3. Gestion d'erreur améliorée
+    console.error("Erreur getArticle:", error);
+    
+    if (!res.headersSent) {
+      res.status(500).json({
+        success: false,
+        message: "Échec de la récupération des articles",
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
   }
 };
 
