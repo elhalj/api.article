@@ -60,7 +60,7 @@ export const getArticle = async (req, res) => {
     res.status(200).json({
       succes: true,
       message: "Effectuer avec succes",
-      arcticle: arcticle,
+      arcticle: [arcticle],
     });
     console.log(arcticle);
   } catch (error) {
@@ -79,7 +79,7 @@ export const getUserArticle = async (req, res) => {
     const article = await Article.find({ author: req.user._id }).sort({
       createdAt: -1,
     });
-    res.status(201).json(article);
+    res.status(201).json([article]);
   } catch (error) {
     res.status(500).json({ message: "ERREUR, verifier server" });
     console.log("ERREUR, verifier server", error.message);
@@ -204,7 +204,7 @@ export const updateArticle = async (req, res) => {
     // 5. Réponse
     res.status(200).json({
       message: "Article modifié avec succès",
-      article: updatedArticle,
+      article: [updatedArticle],
     });
     console.log(updateArticle.title);
   } catch (error) {
