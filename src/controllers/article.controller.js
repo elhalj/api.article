@@ -53,14 +53,14 @@ export const addArticle = async (req, res) => {
 //afficher tous les articles
 export const getArticle = async (req, res) => {
   try {
-    const arcticle = await Article.find({})
+    const arcticles = await Article.find({})
       .populate("author", "name")
       .sort({ createdAt: -1 });
 
     res.status(200).json({
       succes: true,
       message: "Effectuer avec succes",
-      arcticle: arcticle,
+      arcticles: arcticles,
     });
     console.log(arcticle);
   } catch (error) {
