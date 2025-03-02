@@ -10,7 +10,7 @@ import { articleRoute } from "./routes/article.route.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5001;
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cookieParser());
