@@ -76,30 +76,19 @@ const handleError = (res, error) => {
 };
 
 // article.controller.js
-export const getArticles = async (req, res) => {
+export const getArticle = async (req, res) => {
   try {
-    const articles = await Article.find().lean();
+    const article = await Article.find({})
+      .populate("author", "name")
+      .sort({ createdAt: -1 });
 
-    // Corriger le format des dates
-    const formattedArticles = articles.map(article => ({
-      ...article,
-      createdAt: new Date(article.createdAt).toISOString(),
-      updatedAt: new Date(article.updatedAt).toISOString()
-    }));
-
-    // Structure de réponse standardisée
-    res.status(200).json({
-      status: "success",
-      results: formattedArticles.length,
-      data: {
-        articles: formattedArticles
-      }
-    });
-
+    res.status(200).json({ data: article });
+    console.log(article);
   } catch (error) {
     res.status(500).json({
-      status: "error",
-      message: "Erreur serveur"
+      succes: false,
+      message: "Echec lors de la recuperation, verifier server",
+      error: error,
     });
   }
 };
