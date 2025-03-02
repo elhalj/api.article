@@ -51,34 +51,17 @@ export const addArticle = async (req, res) => {
 
 //public
 //afficher tous les articles
-export const getArticle = async (req, res) => {
+// Privee
+//recuperer les arcticles de l'utilisateur connecter
+export const getUserArticle = async (req, res) => {
   try {
-    const articles = await Article.find({})
-      .populate("author", "name")
-      .sort({ createdAt: -1 });
-
-    // 1. Console.log avant l'envoi de la réponse
-    console.log("Articles récupérés:", articles);
-
-    // 2. Correction des typos et uniformisation du format
-    res.status(200).json({
-      success: true,
-      message: "Récupération réussie",
-      count: articles.length,
-      articles
+    const article = await Article.find({ author: req.user._id }).sort({
+      createdAt: -1,
     });
-
+    res.status(201).json(article);
   } catch (error) {
-    // 3. Gestion d'erreur améliorée
-    console.error("Erreur getArticle:", error);
-    
-    if (!res.headersSent) {
-      res.status(500).json({
-        success: false,
-        message: "Échec de la récupération des articles",
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
-      });
-    }
+    res.status(500).json({ message: "ERREUR, verifier server" });
+    console.log("ERREUR, verifier server", error.message);
   }
 };
 
