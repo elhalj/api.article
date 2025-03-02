@@ -61,8 +61,17 @@ const ArticleSchema = new mongoose.Schema(
         return slugify(this.title, { lower: true, strict: true });
       },
     },
+     createdAt: {
+    type: Date,
+    default: Date.now,
+    get: v => v.toISOString() // Formatage automatique
   },
-  { timestamps: true }
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+    get: v => v.toISOString()
+  },
+  },
 );
 
 // Méthode d'instance
