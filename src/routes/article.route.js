@@ -17,6 +17,6 @@ articleRoute.get("/chercherArticle", searchArticle); //rechercher article
 
 //Priver
 articleRoute.post("/ajouterArticle", protectRoute, addArticle); //ajouter article
-articleRoute.get("/mesActicles", protectRoute, getUserArticle); //recuperer articles utilisateur
+articleRoute.get("/mesArticles", protectRoute, getUserArticle); //recuperer articles utilisateur
 articleRoute.delete("/:id", protectRoute, deleteArcticle); //supprimer article
 articleRoute.put("/:id", protectRoute, updateArticle); //modifier article
