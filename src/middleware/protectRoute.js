@@ -5,19 +5,19 @@ export const protectRoute = async (req, res, next) => {
   try {
     const token = req.cookies.jwt;
     if (!token) {
-      res
+      return res
         .status(401)
         .json({ message: "Autorisation refuser - Token invalide" });
     }
 
     const decode = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
     if (!decode) {
-      res.status(401).json({ message: "Autorisation refuser - Pas de token" });
+      return res.status(401).json({ message: "Autorisation refuser - Pas de token" });
     }
 
     const user = await User.findById(decode.userId).select("-password");
     if (!user) {
-      res.status(401).json({ message: "Utilisateur Inexistant" });
+      return res.status(401).json({ message: "Utilisateur Inexistant" });
     }
     req.user = user;
     if (!req.user) {
@@ -27,7 +27,7 @@ export const protectRoute = async (req, res, next) => {
     }
     next();
   } catch (error) {
-    res
+    return res
       .status(501)
       .json({ message: "Erreur dans la protection route -  verifier server" });
     console.log("ERREUR dans la protection du route", error);
