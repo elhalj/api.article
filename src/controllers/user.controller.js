@@ -56,7 +56,7 @@ export const login = async (req, res) => {
           "l'utilisateur n'existe pas, veuillez s'il vous plait vous inscrire",
       });
     }
-    const isPasswordCorrect = bcrypt.compare(password, userExist.password);
+    const isPasswordCorrect = await bcrypt.compare(password, userExist.password);
     if (!isPasswordCorrect) {
       return res
         .status(401)
