@@ -15,7 +15,7 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: 'https://publicblog-ten.vercel.app/', // Autoriser uniquement votre frontend
+  origin: 'https://publicblog-ten.vercel.app', // Autoriser uniquement votre frontend
   credentials: true
 }));
 
