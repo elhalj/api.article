@@ -11,6 +11,9 @@ export const signUp = async (req, res) => {
         message: "Desole, Vous devez d'abord remplir tous les champs",
       });
     }
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Le mot de passe doit contenir au moins 6 caractères" });
+    }
 
     const userExist = await User.findOne({ email });
     if (userExist) {
@@ -97,9 +100,9 @@ export const checkAuth = (req, res) => {
         .status(401)
         .json({ message: "Non authentifié, veuillez vous connecter" });
     }
-    res.status(201).json(req.user);
+    return res.status(201).json(req.user);
   } catch (error) {
-    res.status(401).json({
+    return res.status(401).json({
       message: "Echec d'Authenfication, verifier server",
       error: error,
     });
