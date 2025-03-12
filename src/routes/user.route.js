@@ -4,6 +4,7 @@ import {
   deleteUser,
   getUser,
   getUser_me,
+  getMe,
   login,
   logout,
   signUp,
