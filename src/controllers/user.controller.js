@@ -174,7 +174,7 @@ export const getUser_me = async (req, res) => {
 
 export const getMe = async (req, res) => {
   try {
-        const user = await User.findById(req.user).select('-password');
+        const user = await User.findById(req.userId).select('-password');
         res.json({ user });
     } catch (error) {
         res.status(500).json({ error: "Erreur serveur" });
