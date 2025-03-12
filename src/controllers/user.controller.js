@@ -172,12 +172,22 @@ export const getUser_me = async (req, res) => {
   }
 };
 
+// controllers/user.controller.js
 export const getMe = async (req, res) => {
   try {
-        const user = await User.findById(req.user).select('-password');
-        res.json({ user._id });
-    } catch (error) {
-        res.status(500).json({ error: "Erreur serveur" });
-    }
+    const user = await User.findById(req.user._id).select('-password'); // Utiliser req.user._id
+    if (!user) return res.status(404).json({ error: "Utilisateur non trouvé" });
+    
+    res.json({ 
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Erreur serveur" });
+  }
 }
-// Backend (Exemple Express)
