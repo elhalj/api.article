@@ -16,6 +16,7 @@ routes.post("/signUp", signUp); //creation de compte
 routes.post("/login", login); //connexion
 routes.post("/logout", logout); //connexion
 routes.get("/checkAuth", protectRoute, checkAuth); //verification d'authenfication
+routes.get("/me", protectRoute, getMe); //recuperer donnees utilisateur
 
 //Privee Admin
 routes.get("/getUser", protectRoute, getUser); //recuperer tous les utilateurs
