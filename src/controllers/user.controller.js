@@ -92,21 +92,49 @@ export const logout = (req, res) => {
 };
 
 //Verification d'Athentification controller
-export const checkAuth = (req, res) => {
+// controllers/user.controller.js
+export const checkAuth = async (req, res) => {
   try {
-    // Vérifiez si l'utilisateur est authentifié
-    if (!req.user) {
-      return res
-        .status(401)
-        .json({ message: "Non authentifié, veuillez vous connecter" });
+    // Récupération du token depuis les cookies
+    const token = req.cookies.jwt;
+    
+    if (!token) {
+      return res.status(401).json({ 
+        success: false,
+        message: "Aucun token trouvé" 
+      });
     }
-    return res.status(201).json(req.user);
-  } catch (error) {
-    return res.status(401).json({
-      message: "Echec d'Authenfication, verifier server",
-      error: error,
+
+    // Vérification JWT
+    const decoded = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
+    
+    // Récupération de l'utilisateur
+    const user = await User.findById(decoded.userId).select('-password');
+    
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Utilisateur introuvable"
+      });
+    }
+
+    // Réponse réussie
+    res.status(200).json({
+      success: true,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
     });
-    console.log("Echec d'Authentification", error.message);
+
+  } catch (error) {
+    res.clearCookie('jwt');
+    res.status(401).json({
+      success: false,
+      message: "Session expirée ou invalide"
+    });
   }
 };
 
