@@ -93,48 +93,14 @@ export const logout = (req, res) => {
 
 //Verification d'Athentification controller
 // controllers/user.controller.js
-export const checkAuth = async (req, res) => {
+export const checkAuth = (req, res) => {
   try {
-    // Récupération du token depuis les cookies
-    const token = req.cookies.jwt;
-    
-    if (!token) {
-      return res.status(401).json({ 
-        success: false,
-        message: "Aucun token trouvé" 
-      });
-    }
-
-    // Vérification JWT
-    const decoded = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
-    
-    // Récupération de l'utilisateur
-    const user = await User.findById(decoded.userId).select('-password');
-    
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "Utilisateur introuvable"
-      });
-    }
-
-    // Réponse réussie
-    res.status(200).json({
-      success: true,
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
-    });
-
+    res.status(200).json(req.user);
   } catch (error) {
-    res.clearCookie('jwt');
-    res.status(401).json({
-      success: false,
-      message: "Session expirée ou invalide"
-    });
+    console.log("error to checkAuth controller", error.message);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
