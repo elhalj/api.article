@@ -9,7 +9,7 @@ export const generatedToken = (userId, res) => {
   const cookieOptions = {
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 jours en ms
     httpOnly: true, // Protection contre XSS
-    sameSite: "Strict", // Protection contre CSRF
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", // Protection contre CSRF
     secure: process.env.NODE_ENV === "production", // HTTPS uniquement en prod
     path: "/", // Accessible sur tout le site
     // domain: ".votredomaine.com", // Optionnel (pour les sous-domaines)
