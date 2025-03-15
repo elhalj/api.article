@@ -18,6 +18,7 @@ app.use(cors({
   origin: 'https://publicblog-ten.vercel.app', // Autoriser uniquement votre frontend
   credentials: true,
   exposedHeaders: ['Authorization'] // Permet au frontend de lire les en-têtes
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use("/api", routes);
