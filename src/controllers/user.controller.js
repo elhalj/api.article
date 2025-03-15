@@ -95,7 +95,13 @@ export const logout = (req, res) => {
 // controllers/user.controller.js
 export const checkAuth = (req, res) => {
   try {
-    res.status(200).json(req.user);
+    res.status(200).json({ 
+      user: {
+        _id: req.user._id,
+        name: req.user.name,
+        email: req.user.email
+      }
+    });
   } catch (error) {
     console.log("error to checkAuth controller", error.message);
     res
