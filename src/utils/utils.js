@@ -12,7 +12,7 @@ export const generatedToken = (userId, res) => {
     sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", // Protection contre CSRF
     secure: process.env.NODE_ENV === "production", // HTTPS uniquement en prod
     path: "/", // Accessible sur tout le site
-    // domain: ".votredomaine.com", // Optionnel (pour les sous-domaines)
+    domain: process.env.NODE_ENV === "production" ? ".publicblog-ten.vercel.app" : "localhost"
   };
 
   // 3. Envoi du cookie via la réponse
