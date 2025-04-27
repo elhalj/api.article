@@ -67,8 +67,6 @@ export const addArticle = async (req, res) => {
 
 //public
 //afficher tous les articles
-<<<<<<< HEAD
-=======
 export const getArticle = async (req, res) => {
   try {
     const article = await Article.find({})
@@ -89,7 +87,6 @@ export const getArticle = async (req, res) => {
   }
 };
 
->>>>>>> e47eef0 (correction des rendu data controller)
 // Privee
 //recuperer les arcticles de l'utilisateur connecter
 export const getUserArticle = async (req, res) => {
@@ -109,28 +106,28 @@ export const getUserArticle = async (req, res) => {
 const handleError = (res, error) => {
   console.error(error);
   res.status(500).json({
-    status: 'error',
-    message: error.message || 'Erreur serveur'
+    status: "error",
+    message: error.message || "Erreur serveur",
   });
 };
 
 // article.controller.js
-export const getArticle = async (req, res) => {
-  try {
-    const article = await Article.find({})
-      .populate("author", "name")
-      .sort({ createdAt: -1 });
+// export const getArticle = async (req, res) => {
+//   try {
+//     const article = await Article.find({})
+//       .populate("author", "name")
+//       .sort({ createdAt: -1 });
 
-    res.status(200).json({ data: article });
-    console.log(article);
-  } catch (error) {
-    res.status(500).json({
-      succes: false,
-      message: "Echec lors de la recuperation, verifier server",
-      error: error,
-    });
-  }
-};
+//     res.status(200).json({ data: article });
+//     console.log(article);
+//   } catch (error) {
+//     res.status(500).json({
+//       succes: false,
+//       message: "Echec lors de la recuperation, verifier server",
+//       error: error,
+//     });
+//   }
+// };
 
 //public
 //chercher article par [category, auteur, tags ou status]
