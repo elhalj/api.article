@@ -123,10 +123,10 @@ export const checkAuth = (req, res) => {
         .json({ message: "Non authentifié, veuillez vous connecter" });
     }
     const user = req.user;
-    res.status(200).json({ message: "Utilisateur authentifié", user });
+    return res.status(200).json({ message: "Utilisateur authentifié", user });
   } catch (error) {
     console.error("Echec d'Authentification", error.message);
-    return res.status(500).json({
+    return res.status(401).json({
       message: "Echec d'Authenfication, verifier server",
       error: error.message,
     });
