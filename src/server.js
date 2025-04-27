@@ -14,12 +14,16 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cookieParser());
+<<<<<<< HEAD
 app.use(cors({
   origin: 'https://publicblog-ten.vercel.app', // Autoriser uniquement votre frontend
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   exposedHeaders: ['Content-Length', 'X-Total-Count']
 }));
+=======
+app.use(cors());
+>>>>>>> e47eef0 (correction des rendu data controller)
 
 app.use("/api", routes);
 app.use("/api/article", articleRoute);

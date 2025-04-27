@@ -28,23 +28,28 @@ export const signUp = async (req, res) => {
       password: hashPassword,
       role,
     });
-
+    const data = {
+      _id: user._id,
+      name: user.name,
+      role: user.role,
+    };
     if (user) {
-      generatedToken(user._id, res);
+      const token = generatedToken(user._id, res);
       await user.save();
-      res.status(201).json({
-        message: "Enregistrer avec succes",
-        _id: user._id,
-        name: user.name,
-        role: user.role,
-      });
       console.log("enregistrer avec succer", user._id, user.name);
+      return res.status(201).json({
+        message: "Enregistrer avec succes",
+        data,
+        token,
+      });
     } else {
-      res.statut(401).json({ message: "Desole, enregistrement echouer" });
+      return res
+        .statut(401)
+        .json({ message: "Desole, enregistrement echouer" });
     }
   } catch (error) {
-    res.status(500).json({ message: error });
     console.log("Echec, verifier le server", error.message);
+    return res.status(500).json({ message: error });
   }
 };
 
@@ -66,17 +71,25 @@ export const login = async (req, res) => {
         .json({ message: "password incorrect OU n'existe pas" });
     }
 
-    generatedToken(userExist._id, res);
-    res.status(201).json({
-      message: "connecter avec succes",
+    const token = generatedToken(userExist._id, res);
+    const data = {
       _id: userExist._id,
-    });
+      name: userExist.name,
+      email: userExist.email,
+      role: userExist.role,
+    };
+
     console.log("connecter avec succes...");
+    return res.status(201).json({
+      message: "connecter avec succes",
+      data,
+      token,
+    });
   } catch (error) {
-    res
+    console.log("ERREUR lors de la connection ou server", error.message);
+    return res
       .status(500)
       .json({ message: "ERREUR lors de la connection OU server", error });
-    console.log("ERREUR lors de la connection ou server", error.message);
   }
 };
 
@@ -86,7 +99,9 @@ export const logout = (req, res) => {
     res.cookie("jwt", "", { maxAge: 0 });
     res.status(201).json({ message: "Deconnecter avec succes" });
   } catch (error) {
-    res.status(501).json({ message: "Deconnexion echouer, Probleme server" });
+    return res
+      .status(501)
+      .json({ message: "Deconnexion echouer, Probleme server" });
     console.log("Deconnexion echouer, verifier server", error.message);
   }
 };
@@ -95,6 +110,7 @@ export const logout = (req, res) => {
 // controllers/user.controller.js
 export const checkAuth = (req, res) => {
   try {
+<<<<<<< HEAD
     res.status(200).json({ 
       user: {
         _id: req.user._id,
@@ -107,17 +123,38 @@ export const checkAuth = (req, res) => {
     res
       .status(500)
       .json({ message: "Internal server error", error: error.message });
+=======
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({ message: "Non authentifié, veuillez vous connecter" });
+    }
+    const user = req.user;
+    res.status(200).json({ message: "Utilisateur authentifié", user });
+  } catch (error) {
+    console.error("Echec d'Authentification", error.message);
+    return res.status(500).json({
+      message: "Echec d'Authenfication, verifier server",
+      error: error.message,
+    });
+>>>>>>> e47eef0 (correction des rendu data controller)
   }
 };
 
 export const getUser = async (req, res) => {
   try {
     const getuser = await User.find({}).sort({ createdAt: -1 });
-    res
+    const count = await User.countDocuments();
+
+    const data = {
+      getuser,
+      count,
+    };
+    return res
       .status(200)
-      .json({ suuces: true, message: "Recuperer avec succes", Users: getuser });
+      .json({ succes: true, message: "Recuperer avec succes", data });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       succes: false,
       message:
         "ERREUR lors de ls recuperation des utilisateur, verifier server",
@@ -130,19 +167,19 @@ export const deleteUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
-      res
+      return res
         .status(401)
         .json({ succes: false, message: "utilisateur non trouver" });
     }
 
     const deleteUser = await user.deleteOne({ _id: req.params.id });
-    res.status(201).json({
+    return res.status(201).json({
       succes: true,
       message: "Supprimer avec succes",
       user: deleteUser,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       succes: false,
       message: "ERREUR, verifier server",
       error: error.message,
@@ -154,17 +191,23 @@ export const getUser_me = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
-      res.status(401).json({ succes: false, message: "Invalid credential" });
+      return res
+        .status(401)
+        .json({ succes: false, message: "Invalid credential" });
     }
-    res
-      .status(200)
-      .json({
-        succes: true,
-        message: "Information accorde",
-        user: [user.name, user.email],
-      });
+    const data = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
+    return res.status(200).json({
+      succes: true,
+      message: "Information accorde",
+      data,
+    });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       succes: false,
       message: "ERREUR, verifier server",
       error: error.message,
