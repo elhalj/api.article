@@ -77,7 +77,7 @@ export const getArticle = async (req, res) => {
       article,
     };
     console.log(article);
-    return res.status(200).json({ data });
+    return res.status(200).json({ succes: true, data });
   } catch (error) {
     return res.status(500).json({
       succes: false,
