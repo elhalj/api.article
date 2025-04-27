@@ -15,7 +15,7 @@ export const addArticle = async (req, res) => {
   } = req.body;
   try {
     if (!title || !description || !author || !category || !content) {
-      res.status(401).json({
+      return res.status(401).json({
         message: "Vous avez oublier l'un des champs les plus important",
       });
     }
@@ -31,20 +31,36 @@ export const addArticle = async (req, res) => {
       slug,
     });
 
+    // const validStatuts = ["draft", "published", "archived"];
+    // if (statut && !validStatuts.includes(statut)) {
+    //   return res.status(400).json({ message: "Statut invalide" });
+    // }
+
+    // if (statut) {
+    //   add.statut = statut;
+    // } else {
+    //   add.statut = "draft"; // Valeur par défaut
+    // }
+
+    const data = {
+      _id: add._id,
+      title: add.title,
+      author: add.author,
+      category: add.category,
+    };
+
     if (add) {
       await add.save();
-      res.status(201).json({
-        _id: add._id,
-        title: add.title,
-        author: add.author,
-        category: add.category,
-      });
       console.log("Ajouter avec succes", add._id, add.title);
+      return res.status(201).json({
+        message: "Ajouter avec succes",
+        data,
+      });
     } else {
       res.status(401).json({ message: "Echec lors de l'ajout" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Invalid, verifier server", error });
+    return res.status(500).json({ message: "Invalid, verifier server", error });
     console.log("Invalid, probleme server", error.message);
   }
 };
@@ -53,18 +69,17 @@ export const addArticle = async (req, res) => {
 //afficher tous les articles
 export const getArticle = async (req, res) => {
   try {
-    const arcticle = await Article.find({})
+    const article = await Article.find({})
       .populate("author", "name")
       .sort({ createdAt: -1 });
 
-    res.status(200).json({
-      succes: true,
-      message: "Effectuer avec succes",
-      arcticle: arcticle,
-    });
-    console.log(arcticle);
+    const data = {
+      article,
+    };
+    console.log(article);
+    return res.status(200).json({ data });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       succes: false,
       message: "Echec lors de la recuperation, verifier server",
       error: error,
@@ -79,10 +94,10 @@ export const getUserArticle = async (req, res) => {
     const article = await Article.find({ author: req.user._id }).sort({
       createdAt: -1,
     });
-    res.status(201).json(article);
+    return res.status(201).json(article);
   } catch (error) {
-    res.status(500).json({ message: "ERREUR, verifier server" });
     console.log("ERREUR, verifier server", error.message);
+    return res.status(500).json({ message: "ERREUR, verifier server" });
   }
 };
 
@@ -128,7 +143,7 @@ export const searchArticle = async (req, res) => {
       Article.countDocuments(filter),
     ]);
 
-    res.status(200).json({
+    return res.status(200).json({
       page,
       limit,
       total,
@@ -137,7 +152,7 @@ export const searchArticle = async (req, res) => {
     });
   } catch (error) {
     console.error("Search Error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Erreur lors de la recherche",
       ...(process.env.NODE_ENV === "development" && { debug: error.message }),
     });
@@ -153,20 +168,21 @@ export const deleteArcticle = async (req, res) => {
       return res.status(401).json({ message: "Article non trouver" });
     }
 
-    if (article.author.toString() !== req.user._id.toString()) {
-      return res.status(401).json({
-        message: "Desole, vous n'etes pas autoriser a supprimer l'article",
-      });
-    }
+    // if (article.author.toString() !== req.user._id.toString()) {
+    //   return res.status(401).json({
+    //     message: "Desole, vous n'etes pas autoriser a supprimer l'article",
+    //   });
+    // }
 
     await article.deleteOne({ _id: req.params.id });
-    res
-      .status(201)
-      .json({ message: "supprimer avec succes", article: article });
+
     console.log("Supprimer avec succes", article);
+    return res
+      .status(201)
+      .json({ message: "supprimer avec succes", data: article });
   } catch (error) {
-    res.status(500).json({ message: "ERREUR, verifier server" });
     console.log("ERREUR, verifier server", error.message);
+    return res.status(500).json({ message: "ERREUR, verifier server" });
   }
 };
 
@@ -202,14 +218,14 @@ export const updateArticle = async (req, res) => {
     );
 
     // 5. Réponse
-    res.status(200).json({
-      message: "Article modifié avec succès",
-      article: updatedArticle,
-    });
     console.log(updateArticle.title);
+    return res.status(200).json({
+      message: "Article modifié avec succès",
+      data: updatedArticle,
+    });
   } catch (error) {
     console.error("Erreur lors de la mise à jour de l'article :", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Erreur serveur",
       error: process.env.NODE_ENV === "development" ? error.message : null,
     });
