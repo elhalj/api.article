@@ -12,7 +12,11 @@ export const signUp = async (req, res) => {
       });
     }
     if (password.length < 6) {
-      return res.status(400).json({ message: "Le mot de passe doit contenir au moins 6 caractères" });
+      return res
+        .status(400)
+        .json({
+          message: "Le mot de passe doit contenir au moins 6 caractères",
+        });
     }
 
     const userExist = await User.findOne({ email });
@@ -64,7 +68,10 @@ export const login = async (req, res) => {
           "l'utilisateur n'existe pas, veuillez s'il vous plait vous inscrire",
       });
     }
-    const isPasswordCorrect = await bcrypt.compare(password, userExist.password);
+    const isPasswordCorrect = await bcrypt.compare(
+      password,
+      userExist.password
+    );
     if (!isPasswordCorrect) {
       return res
         .status(401)
@@ -110,20 +117,6 @@ export const logout = (req, res) => {
 // controllers/user.controller.js
 export const checkAuth = (req, res) => {
   try {
-<<<<<<< HEAD
-    res.status(200).json({ 
-      user: {
-        _id: req.user._id,
-        name: req.user.name,
-        email: req.user.email
-      }
-    });
-  } catch (error) {
-    console.log("error to checkAuth controller", error.message);
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
-=======
     if (!req.user) {
       return res
         .status(401)
@@ -137,7 +130,6 @@ export const checkAuth = (req, res) => {
       message: "Echec d'Authenfication, verifier server",
       error: error.message,
     });
->>>>>>> e47eef0 (correction des rendu data controller)
   }
 };
 
@@ -218,19 +210,19 @@ export const getUser_me = async (req, res) => {
 // controllers/user.controller.js
 export const getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select('-password'); // Utiliser req.user._id
+    const user = await User.findById(req.user._id).select("-password"); // Utiliser req.user._id
     if (!user) return res.status(404).json({ error: "Utilisateur non trouvé" });
-    
-    res.json({ 
+
+    res.json({
       user: {
         _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
-        createdAt: user.createdAt
-      }
+        createdAt: user.createdAt,
+      },
     });
   } catch (error) {
     res.status(500).json({ error: "Erreur serveur" });
   }
-}
+};
