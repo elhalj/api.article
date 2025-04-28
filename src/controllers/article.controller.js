@@ -73,9 +73,7 @@ export const getArticle = async (req, res) => {
       .populate("author", "name")
       .sort({ createdAt: -1 });
 
-    const data = {
-      article,
-    };
+    const data = article;
     console.log(article);
     return res.status(200).json({ succes: true, data });
   } catch (error) {
