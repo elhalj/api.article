@@ -16,14 +16,14 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "https://publicblog-ten.vercel.app", // Autoriser uniquement votre frontend
+    origin: "http://localhost:5173", // Autoriser uniquement votre frontend
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
     exposedHeaders: ["Content-Length", "X-Total-Count"],
   })
 );
 
-app.use("/api", routes);
+app.use("/api/auth", routes);
 app.use("/api/article", articleRoute);
 // Gestion des erreurs centralisée
 app.use((err, req, res, next) => {
