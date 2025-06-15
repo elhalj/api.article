@@ -15,7 +15,7 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cookieParser());
 const allowlist = [
-  "http://localhost:3000",
+  "http://localhost:5173",
   "https://posts-seven-red.vercel.app",
 ];
 
