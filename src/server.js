@@ -14,9 +14,24 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cookieParser());
+const allowlist = [
+  "http://localhost:3000",
+  "https://posts-seven-red.vercel.app",
+];
+
 app.use(
   cors({
-    origin: "http://localhost:5173", // Autoriser uniquement votre frontend
+    origin: (origin, callback) => {
+      if (
+        !origin || process.env.NODE_ENV === "production"
+          ? allowlist.includes(origin)
+          : origin === "http://localhost:5173"
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
     exposedHeaders: ["Content-Length", "X-Total-Count"],
